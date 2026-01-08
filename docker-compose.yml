@@ -1,0 +1,31 @@
+services:
+  cash-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cash-manager
+    ports:
+      - "5001:5001"
+    volumes:
+      # 持久化数据库文件
+      - ./database:/app/database
+      # 可选：如果需要持久化日志
+      - ./logs:/app/logs
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=app.py
+      # 生产环境建议修改secret_key
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-in-production}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - cash-manager-network
+
+networks:
+  cash-manager-network:
+    driver: bridge
