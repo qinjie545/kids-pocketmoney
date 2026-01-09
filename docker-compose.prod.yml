@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: cash-manager
     ports:
-      - "${PORT:-5001}:5001"
+      - "${PORT:-19754}:19754"
     volumes:
       # 持久化数据库文件
       - ./database:/app/database
@@ -14,11 +14,11 @@ services:
     environment:
       - FLASK_ENV=production
       - FLASK_APP=app.py
-      - PORT=5001
+      - PORT=19754
       - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-in-production}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5001/login"]
+      test: ["CMD", "curl", "-f", "http://localhost:19754/login"]
       interval: 30s
       timeout: 10s
       retries: 3

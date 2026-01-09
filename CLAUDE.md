@@ -31,8 +31,8 @@ cash_manager/
 
 **重启服务流程：**
 ```bash
-# 1. 停止当前运行的服务（在端口5001）
-lsof -ti:5001 | xargs kill -9
+# 1. 停止当前运行的服务（在端口19754）
+lsof -ti:19754 | xargs kill -9
 
 # 2. 重新启动服务
 source venv/bin/activate && python app.py
@@ -101,8 +101,8 @@ source venv/bin/activate && python app.py
 - 数据库错误：回滚事务，显示错误消息
 
 ## 服务管理
-- 默认端口：5001
-- 访问地址：http://127.0.0.1:5001
+- 默认端口：19754
+- 访问地址：http://127.0.0.1:19754
 - 默认用户：admin/admin123
 - 调试模式：已启用
 
@@ -112,7 +112,7 @@ source venv/bin/activate && python app.py
 source venv/bin/activate && python app.py
 
 # 停止服务
-lsof -ti:5001 | xargs kill -9
+lsof -ti:19754 | xargs kill -9
 
 # 生成测试数据
 python generate_test_data.py

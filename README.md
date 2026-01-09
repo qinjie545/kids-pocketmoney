@@ -30,7 +30,7 @@ docker-compose down
 ```
 
 2. 访问系统：
-   打开浏览器访问 `http://localhost:5001`
+   打开浏览器访问 `http://localhost:19754`
 
 3. 默认登录账号：
    - 用户名：admin
@@ -56,7 +56,7 @@ python app.py
 ```
 
 4. 访问系统：
-   打开浏览器访问 `http://localhost:5001`
+   打开浏览器访问 `http://localhost:19754`
 
 5. 默认登录账号：
    - 用户名：admin

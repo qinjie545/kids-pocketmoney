@@ -596,7 +596,7 @@ if __name__ == '__main__':
 
         # 从环境变量获取配置
         debug_mode = os.environ.get('FLASK_ENV', 'production') != 'production'
-        port = int(os.environ.get('PORT', 5001))
+        port = int(os.environ.get('PORT', 19754))
         host = os.environ.get('HOST', '0.0.0.0')
 
         app.run(debug=debug_mode, host=host, port=port)
