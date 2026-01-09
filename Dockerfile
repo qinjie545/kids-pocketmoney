@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     FLASK_APP=app.py \
     FLASK_ENV=production \
-    PORT=5001
+    PORT=19754
 
 # 安装系统依赖
 RUN apt-get update && apt-get install -y \
@@ -28,11 +28,11 @@ COPY . .
 RUN mkdir -p /app/database /app/logs
 
 # 暴露端口
-EXPOSE 5001
+EXPOSE 19754
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:5001/login || exit 1
+    CMD curl -f http://localhost:19754/login || exit 1
 
 # 创建启动脚本
 RUN echo '#!/bin/bash\n\

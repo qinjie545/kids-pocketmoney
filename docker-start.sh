@@ -38,7 +38,7 @@ sleep 5
 if docker-compose ps | grep -q "Up"; then
     echo "✅ 服务启动成功！"
     echo ""
-    echo "🌐 访问地址: http://localhost:5001"
+    echo "🌐 访问地址: http://localhost:19754"
     echo "👤 默认账号: admin / admin123"
     echo ""
     echo "📋 常用命令:"

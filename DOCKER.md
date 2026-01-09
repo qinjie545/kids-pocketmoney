@@ -72,7 +72,7 @@ docker-compose up -d
 可以通过环境变量或 `.env` 文件配置：
 
 - `SECRET_KEY`: Flask session密钥（生产环境必须修改）
-- `PORT`: 服务端口（默认5001）
+- `PORT`: 服务端口（默认19754）
 - `FLASK_ENV`: Flask环境（production/development）
 
 ## 健康检查
@@ -85,7 +85,7 @@ docker-compose ps
 
 ## 访问服务
 
-启动后访问：`http://localhost:5001`
+启动后访问：`http://localhost:19754`
 
 默认用户：`admin` / `admin123`（首次启动自动创建）
 
