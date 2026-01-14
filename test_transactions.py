@@ -24,23 +24,27 @@ class TransactionTestCase(unittest.TestCase):
         # 设置测试数据库路径
         app.config['TESTING'] = True
         app.config['DATABASE_PATH'] = TEST_DATABASE_PATH
-        
+
+        # 删除可能存在的旧测试数据库
+        if os.path.exists(TEST_DATABASE_PATH):
+            os.remove(TEST_DATABASE_PATH)
+
         # 创建测试数据库
         conn = sqlite3.connect(TEST_DATABASE_PATH)
         cursor = conn.cursor()
-        
+
         # 创建表结构
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS users (
+            CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
-        
+
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS transactions (
+            CREATE TABLE transactions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 type TEXT NOT NULL,
@@ -51,39 +55,39 @@ class TransactionTestCase(unittest.TestCase):
                 FOREIGN KEY (user_id) REFERENCES users (id)
             )
         ''')
-        
+
         # 创建测试用户
         hashed_password = generate_password_hash('test123')
         cursor.execute(
-            'INSERT OR REPLACE INTO users (id, username, password) VALUES (?, ?, ?)',
+            'INSERT INTO users (id, username, password) VALUES (?, ?, ?)',
             (1, 'testuser', hashed_password)
         )
-        
+
         conn.commit()
         conn.close()
 
     def setUp(self):
         """每个测试方法执行前的准备工作"""
         self.client = app.test_client()
-        
+
         # 登录获取session
         with self.client.session_transaction() as sess:
             sess['user_id'] = 1
             sess['username'] = 'testuser'
-        
-        # 清空交易记录
+
+        # 彻底清空交易记录
         conn = sqlite3.connect(TEST_DATABASE_PATH)
         cursor = conn.cursor()
-        cursor.execute('DELETE FROM transactions WHERE user_id = ?', (1,))
+        cursor.execute('DELETE FROM transactions')
         conn.commit()
         conn.close()
 
     def tearDown(self):
         """每个测试方法执行后的清理工作"""
-        # 清空交易记录
+        # 彻底清空交易记录
         conn = sqlite3.connect(TEST_DATABASE_PATH)
         cursor = conn.cursor()
-        cursor.execute('DELETE FROM transactions WHERE user_id = ?', (1,))
+        cursor.execute('DELETE FROM transactions')
         conn.commit()
         conn.close()
 

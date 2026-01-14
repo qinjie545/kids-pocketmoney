@@ -12,9 +12,13 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production')
 DATABASE_PATH = os.path.join(os.path.dirname(__file__), 'database', 'cash_manager.db')
 
+# 允许测试时覆盖数据库路径
+def get_database_path():
+    return app.config.get('DATABASE_PATH', DATABASE_PATH)
+
 def get_db_connection():
     """获取数据库连接"""
-    conn = sqlite3.connect(DATABASE_PATH)
+    conn = sqlite3.connect(get_database_path())
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -59,8 +63,13 @@ def login():
 @app.route('/register', methods=['POST'])
 def register():
     """注册新用户"""
-    username = request.form.get('username')
-    password = request.form.get('password')
+    if request.is_json:
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+    else:
+        username = request.form.get('username')
+        password = request.form.get('password')
 
     if not username or not password:
         return jsonify({'success': False, 'message': '用户名和密码不能为空'})

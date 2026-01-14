@@ -27,13 +27,17 @@ class AdditionalTestCase(unittest.TestCase):
         app.config['DATABASE_PATH'] = TEST_DATABASE_PATH
         app.config['SECRET_KEY'] = 'test-secret-key'
 
+        # 删除可能存在的旧测试数据库
+        if os.path.exists(TEST_DATABASE_PATH):
+            os.remove(TEST_DATABASE_PATH)
+
         # 创建测试数据库
         conn = sqlite3.connect(TEST_DATABASE_PATH)
         cursor = conn.cursor()
 
         # 创建表结构
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS users (
+            CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
@@ -42,7 +46,7 @@ class AdditionalTestCase(unittest.TestCase):
         ''')
 
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS transactions (
+            CREATE TABLE transactions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 type TEXT NOT NULL,
@@ -57,14 +61,14 @@ class AdditionalTestCase(unittest.TestCase):
         # 创建测试用户
         hashed_password = generate_password_hash('test123')
         cursor.execute(
-            'INSERT OR REPLACE INTO users (id, username, password) VALUES (?, ?, ?)',
+            'INSERT INTO users (id, username, password) VALUES (?, ?, ?)',
             (1, 'testuser', hashed_password)
         )
 
         # 创建另一个测试用户
         hashed_password2 = generate_password_hash('test456')
         cursor.execute(
-            'INSERT OR REPLACE INTO users (id, username, password) VALUES (?, ?, ?)',
+            'INSERT INTO users (id, username, password) VALUES (?, ?, ?)',
             (2, 'testuser2', hashed_password2)
         )
 
@@ -80,10 +84,10 @@ class AdditionalTestCase(unittest.TestCase):
             sess['user_id'] = 1
             sess['username'] = 'testuser'
 
-        # 清空交易记录
+        # 彻底清空交易记录
         conn = sqlite3.connect(TEST_DATABASE_PATH)
         cursor = conn.cursor()
-        cursor.execute('DELETE FROM transactions WHERE user_id = ?', (1,))
+        cursor.execute('DELETE FROM transactions')
         conn.commit()
         conn.close()
 
@@ -338,16 +342,22 @@ class AdditionalTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
         self.assertTrue(data['success'])
-        self.assertIn('balance_trend', data)
-        self.assertIn('income_trend', data)
-        self.assertIn('expense_trend', data)
+        self.assertIn('dates', data)
+        self.assertIn('income', data)
+        self.assertIn('expense', data)
+        self.assertIn('balance', data)
 
         # 验证数据结构
-        balance_trend = data['balance_trend']
-        self.assertIsInstance(balance_trend, list)
-        if balance_trend:  # 如果有数据
-            self.assertIn('date', balance_trend[0])
-            self.assertIn('value', balance_trend[0])
+        self.assertIsInstance(data['dates'], list)
+        self.assertIsInstance(data['income'], list)
+        self.assertIsInstance(data['expense'], list)
+        self.assertIsInstance(data['balance'], list)
+
+        # 应该有5天的数据（我们添加了5天的数据）
+        self.assertEqual(len(data['dates']), 5)
+        self.assertEqual(len(data['income']), 5)
+        self.assertEqual(len(data['expense']), 5)
+        self.assertEqual(len(data['balance']), 5)
 
     def test_transaction_input_validation(self):
         """测试交易输入验证"""
