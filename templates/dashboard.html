@@ -1030,6 +1030,7 @@
         }
 
         function setType(type) {
+            currentType = type;  // 更新当前类型
 
             document.querySelectorAll('.type-btn').forEach(btn => {
                 btn.classList.remove('active');
