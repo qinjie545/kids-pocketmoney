@@ -1,0 +1,36 @@
+services:
+  cash-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cash-manager
+    ports:
+      - "${PORT:-19754}:19754"
+    volumes:
+      # 持久化数据库文件
+      - ./backend/database:/app/backend/database
+      # 持久化日志
+      - ./logs:/app/logs
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=backend/app.py
+      - PORT=19754
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-in-production}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:19754/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - cash-manager-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  cash-manager-network:
+    driver: bridge
